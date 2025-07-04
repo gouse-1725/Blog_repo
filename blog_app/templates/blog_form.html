@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h2 class="mb-4" id="form-title">Create New Blog</h2>
+        
+        <form id="blog-form">
+            <input type="hidden" id="blog-id">
+            
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" required>
+                    <option value="">Select a category</option>
+                    <!-- Categories will be loaded here -->
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="content" class="form-label">Content</label>
+                <textarea class="form-control" id="content" rows="10" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label for="images" class="form-label">Images (URLs, one per line)</label>
+                <textarea class="form-control" id="images" rows="3"></textarea>
+                <div class="form-text">Enter image URLs, one per line</div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" onclick="location.href='/all-blogs'">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Blog</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const isEdit = window.location.pathname.includes('/edit-blog/');
+    
+    if (isEdit) {
+        $('#form-title').text('Edit Blog');
+        const urlParts = window.location.pathname.split('/');
+        const categoryId = urlParts[2];
+        const blogId = urlParts[3];
+        
+        // Load blog data
+        $.get(`/api/categories/${categoryId}/blogs/${blogId}/`, function(blog) {
+            $('#blog-id').val(blog.id);
+            $('#title').val(blog.title);
+            $('#content').val(blog.content);
+            
+            // Set images
+            if (blog.images.length > 0) {
+                const imageUrls = blog.images.map(img => img.image).join('\n');
+                $('#images').val(imageUrls);
+            }
+        });
+    }
+    
+    // Load categories
+    $.get('/api/categories/', function(data) {
+        const select = $('#category');
+        data.forEach(category => {
+            select.append(`<option value="${category.id}">${category.name}</option>`);
+        });
+        
+        // If editing, select the current category
+        if (isEdit) {
+            const urlParts = window.location.pathname.split('/');
+            const categoryId = urlParts[2];
+            select.val(categoryId);
+        }
+    });
+    
+    // Form submission
+    $('#blog-form').submit(function(e) {
+        e.preventDefault();
+        
+        const blogData = {
+            title: $('#title').val(),
+            content: $('#content').val(),
+            category: $('#category').val()
+        };
+        
+        const imageUrls = $('#images').val().split('\n').filter(url => url.trim() !== '');
+        
+        if (isEdit) {
+            // Update existing blog
+            const blogId = $('#blog-id').val();
+            const urlParts = window.location.pathname.split('/');
+            const categoryId = urlParts[2];
+            
+            $.ajax({
+                url: `/api/categories/${categoryId}/blogs/${blogId}/`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(blogData),
+                success: function(blog) {
+                    // Update images
+                    updateImages(blog.id, imageUrls);
+                    alert('Blog updated successfully');
+                    location.href = `/blog/${blog.category.id}/${blog.id}`;
+                },
+                error: function(xhr) {
+                    alert('Error updating blog: ' + xhr.responseJSON.error);
+                }
+            });
+        } else {
+            // Create new blog
+            $.ajax({
+                url: `/api/categories/${blogData.category}/blogs/`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(blogData),
+                success: function(blog) {
+                    // Add images
+                    updateImages(blog.id, imageUrls);
+                    alert('Blog created successfully');
+                    location.href = `/blog/${blog.category.id}/${blog.id}`;
+                },
+                error: function(xhr) {
+                    alert('Error creating blog: ' + xhr.responseJSON.error);
+                }
+            });
+        }
+    });
+    
+    function updateImages(blogId, imageUrls) {
+        // First, get existing images to compare
+        const urlParts = window.location.pathname.split('/');
+        const categoryId = urlParts[2];
+        
+        $.get(`/api/categories/${categoryId}/blogs/${blogId}/images/`, function(existingImages) {
+            const existingUrls = existingImages.map(img => img.image);
+            
+            // Delete images that were removed
+            existingImages.forEach(img => {
+                if (!imageUrls.includes(img.image)) {
+                    $.ajax({
+                        url: `/api/categories/${categoryId}/blogs/${blogId}/images/${img.id}/`,
+                        type: 'DELETE'
+                    });
+                }
+            });
+            
+            // Add new images
+            imageUrls.forEach(url => {
+                if (!existingUrls.includes(url)) {
+                    $.ajax({
+                        url: `/api/categories/${categoryId}/blogs/${blogId}/images/`,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ image: url })
+                    });
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
