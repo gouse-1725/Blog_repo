@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url # <<< ADDED: Import for parsing database URL
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,11 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!z&&a0g7(#vpce(y%jrh19sg5g6(@j2l)+1yyedw3+6-o3-wfo'
+# <<< CRITICAL CHANGE 1: Load SECRET_KEY from environment variable for security in production
+# You MUST set a 'SECRET_KEY' environment variable in your Railway service's Variables tab.
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    # This ensures SECRET_KEY is set in production. For local development,
+    # you might load from a .env file (using python-dotenv) or have a different fallback.
+    raise Exception("SECRET_KEY environment variable not set! This is required in production.")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = False # <<< CORRECT: DEBUG should be False for production
 
+# ALLOWED_HOSTS: Keep it like this for initial deployment. For stronger security in
+# a final production setup, replace "*" with your actual Railway domain (e.g., 'web-production-6f6a4.up.railway.app')
+# and any custom domains you add.
 ALLOWED_HOSTS = ["*"]
 
 
@@ -41,7 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog_app',
     'rest_framework',
-    'corsheaders',  
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,9 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Add CORS middleware
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files in production
-
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <<< CORRECT: Casing is 'whitenoise', already fixed from earlier!
 ]
 
 ROOT_URLCONF = 'Blog_project_new.urls'
@@ -62,7 +72,7 @@ ROOT_URLCONF = 'Blog_project_new.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Adjust the path to your templates directory
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,40 +90,17 @@ WSGI_APPLICATION = 'Blog_project_new.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-#DATABASES = {
-       # 'default': {
-        #'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'blog_db',  # Replace with your database name
-        #'USER': 'postgres',  # Replace with your database user
-        #'PASSWORD': 'Gouse@1725',  # Replace with your database password  
-        #'HOST': 'localhost',  # Replace with your database host
-        #'PORT': '5432',  # Default PostgreSQL port
-
-    #}
-#}
-
-
-
-
-os.environ.setdefault("PGDATABASE", "blog_db")
-os.environ.setdefault("PGUSER", "postgres")
-os.environ.setdefault("PGPASSWORD", "Gouse@1725")
-os.environ.setdefault("PGHOST", "localhost")
-os.environ.setdefault("PGPORT", "5432")
-
+# <<< CRITICAL CHANGE 2: Database Configuration for Railway Production
+# Railway injects a DATABASE_URL environment variable for your linked PostgreSQL service.
+# Use dj_database_url to parse it automatically.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ["PGDATABASE"],
-        'USER': os.environ["PGUSER"],
-        'PASSWORD': os.environ["PGPASSWORD"],
-        'HOST': os.environ["PGHOST"],
-        'PORT': os.environ["PGPORT"],
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'), # Fallback for local dev if no DATABASE_URL is set
+        conn_max_age=600 # Optional: for persistent connections
+    )
 }
-
-
-
+# <<< REMOVED: All your previous os.environ.setdefault lines for database credentials are no longer needed,
+# as dj_database_url handles it via DATABASE_URL.
 
 
 # Password validation
@@ -152,8 +139,22 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Adjust the path to your static files directory
+    BASE_DIR / 'static',
 ]
+
+# <<< CRITICAL CHANGE 3: Define STATIC_ROOT for collectstatic and WhiteNoise
+# This is the directory where `python manage.py collectstatic` will gather all your static files.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# <<< ADDED: RECOMMENDED WhiteNoise Storage for Django 4.x+
+# This tells Django to use WhiteNoise's storage backend for static files,
+# enabling compression and manifest file generation.
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -165,4 +166,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'  # Adjust the path to your media files directory
+MEDIA_ROOT = BASE_DIR / 'media'
+# NOTE FOR MEDIA FILES: For production, BASE_DIR / 'media' is not persistent on Railway.
+# User-uploaded media files will be lost if your container restarts.
+# For a production application, you will eventually need to configure cloud storage
+# (e.g., AWS S3, Google Cloud Storage, or Railway Volumes for persistent storage).
