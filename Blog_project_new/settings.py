@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url # <<< ADDED: Import for parsing database URL
+import dj_database_url # <<< THIS LINE MUST BE ADDED
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,22 +23,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# <<< CRITICAL CHANGE 1: Load SECRET_KEY from environment variable for security in production
+# <<< CRITICAL CHANGE 1: This MUST load from an environment variable in production.
 # You MUST set a 'SECRET_KEY' environment variable in your Railway service's Variables tab.
 SECRET_KEY = os.environ.get('SECRET_KEY')
 if not SECRET_KEY:
-    # This ensures SECRET_KEY is set in production. For local development,
-    # you might load from a .env file (using python-dotenv) or have a different fallback.
+    # This check ensures it's set. For local development, you might remove this
+    # or load from a .env file (e.g., using python-dotenv).
     raise Exception("SECRET_KEY environment variable not set! This is required in production.")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False # <<< CORRECT: DEBUG should be False for production
 
-# ALLOWED_HOSTS: Keep it like this for initial deployment. For stronger security in
-# a final production setup, replace "*" with your actual Railway domain (e.g., 'web-production-6f6a4.up.railway.app')
-# and any custom domains you add.
-ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS = ["*"] # Consider restricting this in final production for security
 
 
 # Application definition
@@ -64,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <<< CORRECT: Casing is 'whitenoise', already fixed from earlier!
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <<< CORRECT: Casing is 'whitenoise', already fixed!
 ]
 
 ROOT_URLCONF = 'Blog_project_new.urls'
@@ -99,8 +97,22 @@ DATABASES = {
         conn_max_age=600 # Optional: for persistent connections
     )
 }
-# <<< REMOVED: All your previous os.environ.setdefault lines for database credentials are no longer needed,
-# as dj_database_url handles it via DATABASE_URL.
+# <<< REMOVE ALL OF THESE LINES BELOW THIS POINT (from your original settings.py):
+# os.environ.setdefault("PGDATABASE", "blog_db")
+# os.environ.setdefault("PGUSER", "postgres")
+# os.environ.setdefault("PGPASSWORD", "Gouse@1725")
+# os.environ.setdefault("PGHOST", "localhost")
+# os.environ.setdefault("PGPORT", "5432")
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ["PGDATABASE"],
+#         'USER': os.environ["PGUSER"],
+#         'PASSWORD': os.environ["PGPASSWORD"],
+#         'HOST': os.environ["PGHOST"],
+#         'PORT': os.environ["PGPORT"],
+#     }
+# }
 
 
 # Password validation
@@ -137,19 +149,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'  # <<< CRITICAL CHANGE: Set STATIC_ROOT for collectstatic
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # This is where your static files are located during development
-
+    BASE_DIR / 'static',
 ]
 
 # <<< CRITICAL CHANGE 3: Define STATIC_ROOT for collectstatic and WhiteNoise
 # This is the directory where `python manage.py collectstatic` will gather all your static files.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# <<< ADDED: RECOMMENDED WhiteNoise Storage for Django 4.x+
-# This tells Django to use WhiteNoise's storage backend for static files,
-# enabling compression and manifest file generation.
+# <<< CRITICAL CHANGE 4: WhiteNoise Storage for Django 4.x+ (Recommended)
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
