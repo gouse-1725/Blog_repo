@@ -18,12 +18,22 @@ class Blog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
+    
+    conclusion = models.TextField(default=False)
 
 
     def save(self, *args, **kwargs):
+        # Generate slug only if it's not already set (e.g., for new objects)
         if not self.slug:
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
+            base_slug = slugify(self.title)
+            unique_slug = base_slug
+            num = 1
+            # Check for uniqueness and append a number if necessary
+            while Blog.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{base_slug}-{num}"
+                num += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs) # Call the "real" save method
 
 
     def __str__(self):

@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
     CategoryListView,
     BlogListView,
@@ -51,6 +53,13 @@ urlpatterns = [
    
 
     path('', views.home, name='home'),
-    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('about/', views.about_page, name='about'),
+    path('contact/', views.contact_page, name='contact'),
 
-]
+]+  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+
+

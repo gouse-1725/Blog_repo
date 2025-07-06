@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from blog_app.feeds import LatestBlogPostsFeed  # Import your feed class
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('blog_app.urls')), 
+    path('', include('blog_app.urls')), 
+    path('latest/feed/', LatestBlogPostsFeed(), name='latest_feed'),
 ]

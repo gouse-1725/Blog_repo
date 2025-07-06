@@ -6,6 +6,8 @@ from .models import Blog, Blog_category, Blog_Image
 from .serializers import BlogSerializer, BlogCategorySerializer, BlogImageSerializer
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.db.models import Q
+
 
 # Create your views here.
 
@@ -241,9 +243,23 @@ def categories_view(request):
 
 
 
+
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
+from .models import Blog, Blog_category
+
 def home(request):
     categories = Blog_category.objects.all().prefetch_related('blogs__images')
     recent_blogs = Blog.objects.order_by('-created_at')[:5]
+    query = request.GET.get('q')
+
+    if query:
+        recent_blogs = Blog.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        ).order_by('-created_at').distinct()
+    else:
+        recent_blogs = Blog.objects.order_by('-created_at')[:5]
+
     return render(request, 'home.html', {
         'categories': categories,
         'recent_blogs': recent_blogs
@@ -252,9 +268,38 @@ def home(request):
 # Blog detail view
 def blog_detail(request, slug):
     blog = get_object_or_404(Blog, slug=slug)
-    return render(request, 'blog_detail.html', {'blog': blog})
+
+    # --- MODIFIED LOGIC FOR RELATED POSTS ---
+    # Fetch all blog posts, exclude the current one, and limit
+    related_posts = Blog.objects.exclude(
+        slug=blog.slug          # Exclude the current post using its slug
+    ).order_by(
+        '-created_at'           # Order by most recent
+    )[:3]                       # Limit to 3 other posts (adjust as needed)
+    # --- END OF MODIFIED LOGIC ---
+
+    context = {
+        'blog': blog,
+        'related_posts': related_posts,
+    }
+    return render(request, 'blog_detail.html', context)
 
 
 def categories(request):
     categories = Blog_category.objects.all()
     return render(request, 'home.html', {'categories': categories})
+
+
+def about_page(request):
+    # Fetch, for example, the 5 most recent published blogs
+    recent_blogs = Blog.objects.order_by('-created_at')[:5]
+    categories = Blog_category.objects.all() # Fetch all categories
+
+    context = {
+        'recent_blogs': recent_blogs,
+        'categories': categories,
+    }
+    return render(request, 'about.html', context)
+
+def contact_page(request):
+    return render(request, 'contact.html')

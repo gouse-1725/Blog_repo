@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!z&&a0g7(#vpce(y%jrh19sg5g6(@j2l)+1yyedw3+6-o3-wfo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',  # Add CORS middleware
+    'Whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files in production
 
 ]
 
@@ -77,17 +80,40 @@ WSGI_APPLICATION = 'Blog_project_new.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+#DATABASES = {
+       # 'default': {
+        #'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'blog_db',  # Replace with your database name
+        #'USER': 'postgres',  # Replace with your database user
+        #'PASSWORD': 'Gouse@1725',  # Replace with your database password  
+        #'HOST': 'localhost',  # Replace with your database host
+        #'PORT': '5432',  # Default PostgreSQL port
+
+    #}
+#}
+
+
+
+
+os.environ.setdefault("PGDATABASE", "blog_db")
+os.environ.setdefault("PGUSER", "postgres")
+os.environ.setdefault("PGPASSWORD", "Gouse@1725")
+os.environ.setdefault("PGHOST", "localhost")
+os.environ.setdefault("PGPORT", "5432")
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'blog_db',  # Replace with your database name
-        'USER': 'postgres',  # Replace with your database user
-        'PASSWORD': 'Gouse@1725',  # Replace with your database password  
-        'HOST': 'localhost',  # Replace with your database host
-        'PORT': '5432',  # Default PostgreSQL port
-
+        'NAME': os.environ["PGDATABASE"],
+        'USER': os.environ["PGUSER"],
+        'PASSWORD': os.environ["PGPASSWORD"],
+        'HOST': os.environ["PGHOST"],
+        'PORT': os.environ["PGPORT"],
     }
 }
+
+
+
 
 
 # Password validation
@@ -136,3 +162,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Adjust the path to your media files directory

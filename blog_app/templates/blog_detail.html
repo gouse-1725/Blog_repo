@@ -1,30 +1,356 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{{ blog.title }}</title>
+    <meta charset="UTF-8">
+    <title>{{ blog.title }} - My Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
-        .blog-container {
-            max-width: 800px;
-            margin: 30px auto;
-            font-family: Arial, sans-serif;
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background-color: #f8f9fa;
         }
-        img {
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+            color: #212529;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .navbar-brand {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+        }
+
+        .hero-image {
+            max-height: 450px;
+            object-fit: cover;
+            width: 100%;
+            border-radius: 8px; /* Slightly larger border-radius for hero */
+            margin-bottom: 30px; /* More space below hero */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Subtle shadow for hero */
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08); /* More pronounced shadow for the card */
+        }
+
+        .blog-content {
+            text-align: justify;
+            font-size: 1.05rem; /* Slightly larger base font size */
+        }
+
+        /* Styles for images within blog content */
+        .blog-content img {
+            max-width: 100%; /* Ensure images don't overflow */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px; /* Space below all content images */
+            display: block; /* Ensures images behave as blocks */
+        }
+
+        /* Specific classes for image alignment, to be added directly in blog.content HTML from editor */
+        .blog-content .img-float-right {
+            float: right;
+            margin: 15px 0 25px 30px; /* Top, Right, Bottom, Left */
+            max-width: 350px; /* A bit larger for side images */
+        }
+
+        .blog-content .img-float-left {
+            float: left;
+            margin: 15px 30px 25px 0;
+            max-width: 350px;
+        }
+
+        .blog-content .img-center {
+            display: block;
+            margin: 30px auto;
+            max-width: 70%; /* Wider centered images */
+        }
+
+        .blog-content .img-full-width {
+            margin: 30px 0;
             max-width: 100%;
-            height: auto;
-            margin-bottom: 15px;
+        }
+
+        /* Clearfix for floated images */
+        .blog-content::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        blockquote {
+            border-left: 5px solid #007bff;
+            padding-left: 20px;
+            margin: 25px 0;
+            font-style: italic;
+            color: #555;
+            background-color: #e9f5ff; /* Light blue background for blockquote */
+            padding: 15px 20px;
+            border-radius: 5px;
+        }
+
+        .text-muted strong {
+            color: #555; /* Darker strong text in metadata */
+        }
+
+        /* Author and Share Section */
+        .author-info img {
+            border: 2px solid #007bff;
+            padding: 2px;
+        }
+
+        .btn-social {
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .btn-facebook { background-color: #3b5998; }
+        .btn-facebook:hover { background-color: #2d4373; }
+        .btn-twitter { background-color: #1da1f2; }
+        .btn-twitter:hover { background-color: #0c85d0; }
+        /* Add more social button styles as needed */
+
+        /* Related Posts Card Styling */
+        .related-posts .card-img-top {
+            height: 180px; /* Fixed height for related post images */
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .related-posts .card {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Lighter shadow for related cards */
+            transition: transform 0.2s ease-in-out;
+        }
+        .related-posts .card:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .blog-content .img-float-right,
+            .blog-content .img-float-left,
+            .blog-content .img-center {
+                float: none;
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 100%;
+            }
+
+            .p-md-5 {
+                padding: 1.5rem !important; /* Adjust padding on smaller screens */
+            }
+
+            .hero-image {
+                max-height: 250px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="blog-container">
-        <h1>{{ blog.title }}</h1>
-        <p><strong>Category:</strong> {{ blog.category.name }}</p>
-        {% for image in blog.images.all %}
-            <img src="{{ image.image }}" alt="{{ blog.title }}">
-        {% endfor %}
-        <p>{{ blog.content }}</p>
-        <p><em>Published on: {{ blog.created_at }}</em></p>
-        <a href="{% url 'home' %}">← Back to Home</a>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top"> <div class="container">
+
+        
+        <img src="/media/logo1.png" alt="Logo" style="height: 40px; width: auto; margin-right: 10px;">
+        <a class="navbar-brand" href="{% url 'home' %}">My Blog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-light ms-2" href="{% url 'home' %}">← Back to Home</a>
+                </li>
+            </ul>
+        </div>
     </div>
+</nav>
+
+<div class="container my-5">
+    <div class="card shadow-sm p-4 p-md-5"> <h1 class="mb-3 text-center">{{ blog.title }}</h1>
+        <p class="text-muted mb-4 text-center"> <strong>Category:</strong> {{ blog.category.name }} | 
+            <em>Published on: {{ blog.created_at|date:"F j, Y" }}</em>
+        </p>
+
+        {% if blog.images.all %}
+            <img src="{{ blog.images.all.0.image }}" alt="{{ blog.title }}" class="hero-image">
+        {% endif %}
+
+        <div class="blog-content mt-4">
+            {{ blog.content|safe }}
+
+            {#
+            <p>
+                This is the introductory paragraph of your blog post. It should set the stage and grab the reader's attention. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+
+            {% if blog.images.all.1 %} {# Check if a second image exists #}
+                <img src="{{ blog.images.all.1.image }}" alt="Descriptive Alt Text for Image 2" class="img-float-right">
+            {% endif %}
+            
+            <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Here, the content flows around an image that is floated to the right. This creates a dynamic visual layout that is common in modern blogs. Make sure your image's aspect ratio works well with floating.
+            </p>
+            <p>
+                Another paragraph continuing the narrative. It's important to break up long blocks of text with images, subheadings, and other formatting to improve readability. Think about the rhythm of your content – when does it make sense to introduce a visual element?
+            </p>
+
+            <h2>Understanding the Core Concepts</h2>
+            <p>
+                Now we delve deeper into the main subject. This section uses a subheading to organize the information. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Proin vel ante a orci ultrices aliquam.
+            </p>
+
+            {% if blog.images.all.2 %} {# Check if a third image exists #}
+                <img src="{{ blog.images.all.2.image }}" alt="Descriptive Alt Text for Image 3" class="img-center">
+            {% endif %}
+
+            <p>
+                This image is centered and takes up a good portion of the width, ideal for larger, more impactful visuals like diagrams or scenic photos. Nam varius turpis ac purus viverra, vel lacinia felis facilisis. Aliquam erat volutpat. Integer eu turpis in metus cursus gravida.
+            </p>
+            
+            <blockquote>
+                "The best way to predict the future is to create it." - Peter Drucker. This is an example of a blockquote, which can be used for important quotes, testimonials, or to visually offset a significant piece of information.
+            </blockquote>
+
+            <h3>Practical Applications</h3>
+            <p>
+                Let's explore some practical applications of what we've learned. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.
+            </p>
+
+            {% if blog.images.all.3 %} {# Check if a fourth image exists #}
+                <img src="{{ blog.images.all.3.image }}" alt="Descriptive Alt Text for Image 4" class="img-float-left">
+            {% endif %}
+
+            <p>
+                Here's an image floated to the left, demonstrating another common layout pattern. Remember to ensure your images are relevant and add value to the surrounding text. The content continues to wrap around it. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla.
+            </p>
+            <p>
+                Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor.
+            </p>
+
+            {% if blog.conclusion %}
+    <div class="blog-conclusion mt-5">
+        <h2 class="mb-3">Conclusion</h2>
+        {{ blog.conclusion|safe }}
+    </div>
+{% endif %}
+            <p>
+                Thank you for reading! Don't forget to check out our other posts for more great content.
+            </p>
+
+            {% if blog.images.all.4 %} {# Check if a fifth image exists for concluding image #}
+                <img src="{{ blog.images.all.4.image }}" alt="Concluding Image" class="img-full-width">
+            {% endif %}
+            #}
+        </div>
+
+        <hr class="my-5">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6 mb-3 mb-md-0 author-info">
+                <h5>About the Author</h5>
+                <div class="d-flex align-items-center">
+                    <img src="/media/gouse.jpg" alt="Author Photo" class="rounded-circle me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                    <div>
+                        <p class="mb-0"><strong>Shaik Abdul Gouse</strong></p>
+                        <small class="text-muted">Passionate writer and tech enthusiast. Follow me on social media!</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h5>Share This Post</h5>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-social btn-facebook me-2"><i class="fab fa-facebook-f"></i> Share on Facebook</a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ blog.title }}" target="_blank" class="btn btn-social btn-twitter"><i class="fab fa-twitter"></i> Share on Twitter</a>
+                </div>
+        </div>
+
+        <hr class="my-5">
+
+        <h5 class="mb-4">Related Posts</h5>
+        <div class="row related-posts">
+            {% if related_posts %}
+                {% for related_blog in related_posts %}
+                    <div class="col-lg-4 col-md-6 mb-4"> {# Adjusted column classes for better responsiveness #}
+                        <div class="card h-100">
+                            {% if related_blog.images.all %}
+                                <img src="{{ related_blog.images.all.0.image }}" class="card-img-top" alt="{{ related_blog.title }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/400x250?text=No+Image" class="card-img-top" alt="No Image Available">
+                            {% endif %}
+                            <div class="card-body d-flex flex-column"> {# Use flex to push button to bottom #}
+                                <h5 class="card-title">{{ related_blog.title }}</h5>
+                                <p class="card-text text-muted small mb-auto">Category: {{ related_blog.category.name }}</p> {# mb-auto pushes it up #}
+                                <a href="{% url 'blog_detail' slug=related_blog.slug %}" class="btn btn-sm btn-outline-primary mt-3">Read More</a> {# mt-3 adds spacing #}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <p class="text-muted text-center">No related posts found in this category.</p>
+                </div>
+            {% endif %}
+        </div>
+
+
+    </div>
+</div>
+
+<footer class="bg-dark text-light mt-5 pt-4 pb-2">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+                <h5>About My Blog</h5>
+                <p>My Blog is a place to share coding tutorials, travel stories, tech reviews, and more in a clean, elegant way.</p>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'home' %}" class="text-decoration-none text-light">Home</a></li>
+                    <li><a href="{% url 'about' %}" class="text-decoration-none text-light">About</a></li>
+                    <li><a href="{% url 'contact' %}" class="text-decoration-none text-light">Contact</a></li>
+                    </ul>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h5>Contact Info</h5>
+                <p>Email: abdul1725@myblog.com</p>
+                <p>Phone: +91 94913 09768</p>
+            </div>
+        </div>
+
+        <hr class="bg-light">
+        <div class="text-center">
+            &copy; {% now "Y" %} My Blog. All rights reserved.
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
