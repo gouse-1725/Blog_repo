@@ -172,3 +172,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'  # Adjust the path to your media files directory
+
+CSRF_TRUSTED_ORIGINS = ['https://web-production-6f6a4.up.railway.app']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
