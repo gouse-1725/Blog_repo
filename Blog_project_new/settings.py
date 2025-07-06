@@ -115,10 +115,10 @@ DATABASES = {
 
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600)
+    'default': dj_database_url.config(
+        conn_max_age=600
+    )
 }
-
-
 
 
 # Password validation
@@ -158,7 +158,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # Adjust the path to your static files directory
+
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory where static files will be collected in production
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
