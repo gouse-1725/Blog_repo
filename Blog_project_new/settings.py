@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',  # Add CORS middleware
-    'Whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files in production
 
 ]
 
