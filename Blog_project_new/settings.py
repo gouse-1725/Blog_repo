@@ -137,9 +137,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/'  # <<< CRITICAL CHANGE: Set STATIC_ROOT for collectstatic
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'static',  # This is where your static files are located during development
+
 ]
 
 # <<< CRITICAL CHANGE 3: Define STATIC_ROOT for collectstatic and WhiteNoise
