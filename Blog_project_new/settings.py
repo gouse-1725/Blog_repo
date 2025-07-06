@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 import os
 
 
@@ -94,7 +95,7 @@ WSGI_APPLICATION = 'Blog_project_new.wsgi.application'
 
 
 
-
+'''
 os.environ.setdefault("PGDATABASE", "blog_db")
 os.environ.setdefault("PGUSER", "postgres")
 os.environ.setdefault("PGPASSWORD", "Gouse@1725")
@@ -110,8 +111,12 @@ DATABASES = {
         'HOST': os.environ["PGHOST"],
         'PORT': os.environ["PGPORT"],
     }
-}
+}'''
 
+
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600)
+}
 
 
 
