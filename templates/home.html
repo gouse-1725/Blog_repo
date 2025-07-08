@@ -230,7 +230,7 @@
             <div class="col">
                 <article class="blog-card h-100"> {# h-100 for equal height cards #}
                     {% if blog.images.first %}
-                        <img src="{{ blog.images.first.image.url }}" class="blog-image" alt="{{ blog.title }}">
+                        <img src="{{ blog.images.first.image }}" class="blog-image" alt="{{ blog.title }}">
                     {% else %}
                         <img src="https://via.placeholder.com/400x220?text=No+Image" class="blog-image" alt="No Image">
                     {% endif %}
