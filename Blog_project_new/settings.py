@@ -1,6 +1,8 @@
 from pathlib import Path
 import dj_database_url
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -59,8 +61,7 @@ WSGI_APPLICATION = 'Blog_project_new.wsgi.application'
 # Database
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://localhost:5432/blog_db',  # fallback for local
-        conn_max_age=600
+        default=os.getenv('DATABASE_URL')
     )
 }
 

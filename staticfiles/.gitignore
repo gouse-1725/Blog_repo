@@ -5,3 +5,4 @@ db.sqlite3
 venv/
 staticfiles/ # This should *not* be committed if you're collecting on deploy
 mediafiles/  # This should *not* be committed
+.env

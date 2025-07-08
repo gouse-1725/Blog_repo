@@ -221,7 +221,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-            <img src="/media/logo1.png" alt="Logo" style="height: 40px; width: auto; margin-right: 10px;" class="rounded-circle">
+            <img src="{% static 'logo1.png' %}" alt="Logo" style="height: 40px; width: auto; margin-right: 10px;" class="rounded-circle">
             <span>My Awesome Blog</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -262,7 +262,7 @@
                 <h2 class="mt-5">Meet the Team</h2>
                 <div class="row justify-content-center">
                     <div class="col-md-6 col-lg-4 team-member">
-                        <img src="/media/Durga.jpg" alt="John Doe">
+                        <img src="{% static 'Durga.jpg'}" alt="Durga Rao">
                         <h4>R . Durga Rao</h4>
                         <p class="role">Founder and Lead Developer</p>
                         <p class="text-muted small">Durga is passionate about Python and Django, with over 10 years of experience building web applications.</p>
@@ -273,10 +273,10 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 team-member">
-                        <img src="/media/gouse.jpg" alt="Jane Smith">
+                        <img src="{% static 'gouse.jpg' %}" alt="Abdul Gouse">
                         <h4>Shaik Abdul Gouse</h4>
-                        <p class="role">Founder & Lead Developer</p>
-                        <p class="text-muted small">Jane ensures all content is top-notch, focusing on clarity, accuracy, and reader engagement.</p>
+                        <p class="role">Lead Developer</p>
+                        <p class="text-muted small">Gouse ensures all content is top-notch, focusing on clarity, accuracy, and reader engagement.</p>
                         <div class="social-icons">
                             <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
                             <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
