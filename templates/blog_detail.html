@@ -309,7 +309,11 @@
                 <h5>Share This Post</h5>
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-social btn-facebook me-2"><i class="fab fa-facebook-f"></i> Share on Facebook</a>
                 <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ blog.title }}" target="_blank" class="btn btn-social btn-twitter"><i class="fab fa-twitter"></i> Share on Twitter</a>
+                <a href="https://api.whatsapp.com/send?text={{ blog.title }} - {{ request.build_absolute_uri }}" target="_blank" class="btn btn-social btn-whatsapp me-2">
+                    <i class="fab fa-whatsapp"></i> Share on WhatsApp
+    </a>
             </div>
+
         </div>
 
         <hr class="my-5">
