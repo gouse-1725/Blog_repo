@@ -20,6 +20,9 @@ class Blog(models.Model):
     slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
     
     conclusion = models.TextField(default=False)
+    core_concepts = models.TextField(default=False)
+    main_concept = models.TextField(default=False)
+    
 
 
     def save(self, *args, **kwargs):
