@@ -232,23 +232,24 @@
                 <img src="{{ blog.images.all.2.image }}" alt="Descriptive Alt Text for Image 3" class="img-center">
             {% endif %}
 
-            {% if blog.main_concept %}
-    <div class="blog-conclusion mt-5">
-        <h2 class="mb-3">Main_concept</h2>
-        {{ blog.main_concept|safe }}
-    </div>
-{% endif %}
+            
             
             <blockquote>
                 "The best way to predict the future is to create it." - Peter Drucker. 
                 This quote encapsulates the essence of innovation and creativity in our field.
-                
+
             </blockquote>
 
-            <h3>Practical Applications</h3>
+            {% if blog.partial_applications %}
+    <div class="blog-conclusion mt-5">
+        <h2 class="mb-3">Partial Applications</h2>
             <p>
                 Let's explore some practical applications of what we've learned.
             </p>
+        {{ blog.partial_applications|safe }}
+    </div>
+{% endif %}
+            
 
 
             {% if blog.images.all.3 %} {# Check if a fourth image exists #}

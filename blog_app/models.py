@@ -21,7 +21,7 @@ class Blog(models.Model):
     
     conclusion = models.TextField(default=False)
     core_concepts = models.TextField(default=False)
-    main_concept = models.TextField(default=False)
+    partial_applications = models.TextField(default=False)
     
 
 
