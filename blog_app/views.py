@@ -292,7 +292,7 @@ def categories(request):
 
 def about_page(request):
     # Fetch, for example, the 5 most recent published blogs
-    recent_blogs = Blog.objects.order_by('-created_at')[:5]
+    recent_blogs = Blog.objects.order_by('-created_at')[:3]
     categories = Blog_category.objects.all() # Fetch all categories
 
     context = {
