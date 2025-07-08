@@ -250,7 +250,7 @@ from .models import Blog, Blog_category
 
 def home(request):
     categories = Blog_category.objects.all().prefetch_related('blogs__images')
-    recent_blogs = Blog.objects.order_by('-created_at')[:5]
+    recent_blogs = Blog.objects.order_by('-created_at')[:3]
     query = request.GET.get('q')
 
     if query:
@@ -258,7 +258,7 @@ def home(request):
             Q(title__icontains=query) | Q(content__icontains=query)
         ).order_by('-created_at').distinct()
     else:
-        recent_blogs = Blog.objects.order_by('-created_at')[:5]
+        recent_blogs = Blog.objects.order_by('-created_at')[:3]
 
     return render(request, 'home.html', {
         'categories': categories,
