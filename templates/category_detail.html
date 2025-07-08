@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Blog - Home</title>
+    {# Dynamically set the title based on the category #}
+    <title>{{ category.name }} Blogs - My Blog</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -27,24 +28,25 @@
             font-weight: 700;
         }
 
-        /* Hero section specific styles */
-        .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://via.placeholder.com/1500x500/333/fff?text=Welcome+to+My+Blog') no-repeat center center/cover;
+        /* Hero section specific styles - adapted for category page banner */
+        .category-hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://via.placeholder.com/1500x300/555/fff?text=Category') no-repeat center center/cover;
             color: white;
-            padding: 80px 0;
+            padding: 60px 0;
             text-align: center;
             margin-bottom: 3rem;
         }
-        .hero-section h1 {
-            font-size: 3.5rem;
+        .category-hero-section h1 {
+            font-size: 3rem;
             font-weight: 700;
             color: white;
         }
-        .hero-section p {
-            font-size: 1.25rem;
-            max-width: 700px;
-            margin: 0 auto 20px auto;
+        .category-hero-section p {
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
+
 
         /* Search bar styling */
         .search-bar-container {
@@ -70,28 +72,28 @@
 
         /* Blog card styling */
         .blog-card {
-            border: none; /* Remove default card border */
+            border: none;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* More pronounced shadow */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            display: flex; /* Use flex for card layout */
-            flex-direction: column; /* Stack content vertically */
+            display: flex;
+            flex-direction: column;
         }
         .blog-card:hover {
-            transform: translateY(-8px); /* Lift effect on hover */
+            transform: translateY(-8px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
         .blog-image {
             width: 100%;
-            height: 220px; /* Consistent image height */
+            height: 220px;
             object-fit: cover;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
         .blog-content {
-            padding: 1.5rem; /* More padding inside card */
-            flex-grow: 1; /* Allows content to take up available space */
+            padding: 1.5rem;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
@@ -104,7 +106,7 @@
             color: #666;
             margin-bottom: 1rem;
             font-size: 0.95rem;
-            flex-grow: 1; /* Pushes the button to the bottom */
+            flex-grow: 1;
         }
         .read-more {
             display: inline-block;
@@ -113,12 +115,12 @@
             padding: 0.75rem 1.5rem;
             text-decoration: none;
             border-radius: 5px;
-            align-self: flex-start; /* Aligns button to the start within flex column */
+            align-self: flex-start;
             transition: background-color 0.3s ease;
         }
         .read-more:hover {
             background-color: #0056b3;
-            color: white; /* Ensure text remains white on hover */
+            color: white;
         }
         .blog-meta {
             font-size: 0.85rem;
@@ -149,14 +151,14 @@
 
         /* Footer styling */
         .footer {
-            background-color: #212529; /* Darker footer */
+            background-color: #212529;
             color: white;
             padding: 2rem 0;
             text-align: center;
-            margin-top: 4rem; /* More space above footer */
+            margin-top: 4rem;
         }
         .footer-links a {
-            color: #adb5bd; /* Lighter grey for links */
+            color: #adb5bd;
             text-decoration: none;
             margin: 0 10px;
             transition: color 0.3s ease;
@@ -179,20 +181,19 @@
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li> {# No longer active on category page #}
                 <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                 
-                {# New: Dropdown for Categories #}
-                {% if categories %}
+                {# New: Dropdown for Categories - same as home.html #}
+                {% if all_categories %} {# Assuming you pass 'all_categories' to this template #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle active" aria-current="page" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Categories
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownCategories">
-                        {% for category in categories %}
-                            {# IMPORTANT: You'll need a Django URL pattern named 'category_detail' or similar #}
-                            <li><a class="dropdown-item" href="{% url 'category_detail' category.slug %}">{{ category.name }}</a></li>
+                        {% for cat in all_categories %} {# Use 'cat' to avoid conflict with 'category' passed #}
+                            <li><a class="dropdown-item {% if cat == category %}active{% endif %}" href="{% url 'category_detail' cat.slug %}">{{ cat.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </li>
@@ -204,31 +205,29 @@
     </div>
 </nav>
 
-<section class="hero-section">
+<section class="category-hero-section">
     <div class="container">
-        <h1>Welcome to My Blog</h1>
-        <p class="lead">Your go-to source for coding insights, travel adventures, tech reviews, and more.</p>
-        <a href="#recent-blogs" class="btn btn-light btn-lg">Explore Blogs</a>
+        <h1>Blogs in <br class="d-md-none">{{ category.name }}</h1> {# category is passed from view #}
+        <p class="lead">Explore all posts related to the {{ category.name }} category.</p>
     </div>
 </section>
 
 <div class="search-bar-container">
     <div class="container">
-        <form method="GET" action="{% url 'home' %}" class="d-flex justify-content-center">
-            <input type="text" name="q" class="form-control form-control-lg w-md-50 me-2" placeholder="Search blogs by title or content..." value="{{ request.GET.q|default:'' }}">
+        {# Adjust search action to filter within the current category #}
+        <form method="GET" action="{% url 'category_detail' category.slug %}" class="d-flex justify-content-center">
+            <input type="text" name="q" class="form-control form-control-lg w-md-50 me-2" placeholder="Search in {{ category.name }} blogs..." value="{{ request.GET.q|default:'' }}">
             <button type="submit" class="btn btn-primary btn-lg">Search</button>
         </form>
     </div>
 </div>
 
 <div class="container">
-
-    <section class="category-section" id="recent-blogs">
-        <h2 class="category-title">Recent Blogs</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"> {# Bootstrap grid system #}
-            {% for blog in recent_blogs %} {# Assuming your home view passes a 'recent_blogs' queryset #}
+    <section class="category-section">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for blog in blogs %} {# 'blogs' is the queryset for the current category #}
             <div class="col">
-                <article class="blog-card h-100"> {# h-100 for equal height cards #}
+                <article class="blog-card h-100">
                     {% if blog.images.first %}
                         <img src="{{ blog.images.first.image.url }}" class="blog-image" alt="{{ blog.title }}">
                     {% else %}
@@ -239,22 +238,18 @@
                         <p class="blog-meta">
                             {{ blog.created_at|date:"F j, Y" }} | Category: {{ blog.category.name }}
                         </p>
-                        <p class="blog-excerpt">{{ blog.content|truncatewords:25|safe }}</p> {# Added |safe filter #}
-                        <a href="{% url 'blog_detail' slug=blog.slug %}" class="read-more mt-auto">Read More</a> {# mt-auto pushes button to bottom #}
+                        <p class="blog-excerpt">{{ blog.content|truncatewords:25|safe }}</p>
+                        <a href="{% url 'blog_detail' slug=blog.slug %}" class="read-more mt-auto">Read More</a>
                     </div>
                 </article>
             </div>
             {% empty %}
             <div class="col-12 text-center py-5">
-                <p class="lead">No recent blogs found. Check back soon!</p>
+                <p class="lead">No blogs found in the "{{ category.name }}" category yet. Check back soon!</p>
             </div>
             {% endfor %}
         </div>
     </section>
-
-    {# Removed the category specific blog listings from the home page #}
-    {# The logic below will be handled by a new 'category_detail.html' template #}
-    
 </div>
 
 <footer class="footer">
