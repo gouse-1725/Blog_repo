@@ -32,9 +32,9 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('<slug:slug>/', views.blog_detail, name='blog_detail'),
     path('about/', views.about_page, name='about'),
     path('contact/', views.contact_page, name='contact'),
+    path('<slug:slug>/', views.blog_detail, name='blog_detail'),
 
 ]+  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

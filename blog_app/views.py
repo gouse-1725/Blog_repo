@@ -12,7 +12,7 @@ from django.db.models import Q
 # Create your views here.
 
 
-
+'''
 class CategoryListView(APIView):
     def get(self, request):
         categories = Blog_category.objects.all()
@@ -242,7 +242,7 @@ def categories_view(request):
 
 
 
-
+'''
 
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
