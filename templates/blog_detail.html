@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="{{ blog.title }}">
     <meta property="og:description" content="{{ blog.content|truncatechars:150 }}">
-    <meta property="og:image" content="{{ blog.image.url }}">
+    <meta property="og:image" content="{{ blog.images.first.image }}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="article">
 
